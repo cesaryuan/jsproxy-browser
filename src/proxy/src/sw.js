@@ -25,9 +25,9 @@ let mUrlHandler
 
 
 /**
- * @param {*} target 
- * @param {number} cmd 
- * @param {*=} val 
+ * @param {*} target
+ * @param {number} cmd
+ * @param {*=} val
  */
 function sendMsg(target, cmd, val) {
   if (target) {
@@ -49,7 +49,7 @@ function genPageId() {
 }
 
 /**
- * @param {number} pageId 
+ * @param {number} pageId
  */
 function pageWait(pageId) {
   const s = new Signal()
@@ -65,8 +65,8 @@ function pageWait(pageId) {
 }
 
 /**
- * @param {number} id 
- * @param {boolean} isDone 
+ * @param {number} id
+ * @param {boolean} isDone
  */
 function pageNotify(id, isDone) {
   const arr = pageWaitMap.get(id)
@@ -96,9 +96,9 @@ function makeHtmlRes(body, status = 200) {
 
 
 /**
- * @param {Response} res 
- * @param {ResponseInit} resOpt 
- * @param {URL} urlObj 
+ * @param {Response} res
+ * @param {ResponseInit} resOpt
+ * @param {URL} urlObj
  */
 function processHtml(res, resOpt, urlObj) {
   const reader = res.body.getReader()
@@ -134,8 +134,8 @@ function processHtml(res, resOpt, urlObj) {
 
 
 /**
- * @param {ArrayBuffer} buf 
- * @param {string} charset 
+ * @param {ArrayBuffer} buf
+ * @param {string} charset
  */
 function processJs(buf, charset) {
   const u8 = new Uint8Array(buf)
@@ -145,8 +145,8 @@ function processJs(buf, charset) {
 
 
 /**
- * @param {*} cmd 
- * @param {*} msg 
+ * @param {*} cmd
+ * @param {*} msg
  * @param {string=} srcId
  */
 async function sendMsgToPages(cmd, msg, srcId) {
@@ -169,7 +169,7 @@ async function sendMsgToPages(cmd, msg, srcId) {
 const mIdUrlMap = new Map()
 
 /**
- * @param {string} id 
+ * @param {string} id
  */
 async function getUrlByClientId(id) {
   const client = await clients.get(id)
@@ -183,9 +183,9 @@ async function getUrlByClientId(id) {
 
 
 /**
- * @param {string} jsonStr 
- * @param {number} status 
- * @param {URL} urlObj 
+ * @param {string} jsonStr
+ * @param {number} status
+ * @param {URL} urlObj
  */
 function parseGatewayError(jsonStr, status, urlObj) {
   let ret = ''
@@ -229,9 +229,9 @@ function parseGatewayError(jsonStr, status, urlObj) {
 
 
 /**
- * @param {Request} req 
+ * @param {Request} req
  * @param {URL} urlObj
- * @param {URL} cliUrlObj 
+ * @param {URL} cliUrlObj
  * @param {number} redirNum
  * @returns {Promise<Response>}
  */
@@ -259,8 +259,8 @@ async function forward(req, urlObj, cliUrlObj, redirNum) {
   }
 
   /**
-   * @param {string} k 
-   * @param {string} v 
+   * @param {string} k
+   * @param {string} v
    */
   const setHeader = (k, v) => {
     if (!headersMutable) {
@@ -385,7 +385,7 @@ async function initDB() {
 
 
 /**
- * @param {FetchEvent} e 
+ * @param {FetchEvent} e
  */
 async function onFetch(e) {
   if (!mConf) {
@@ -431,9 +431,9 @@ async function onFetch(e) {
       return Response.redirect(newUrl, 301)
     }
   }
+  // 请求之前替换FAKE_DOMAIN
+  let targetUrlStr = urlx.decUrlStrAbs(urlStr).replace(path.FAKE_DOMAIN, path.REAL_DOMAIN)
 
-  let targetUrlStr = urlx.decUrlStrAbs(urlStr)
-  
   const handler = mUrlHandler[targetUrlStr]
   if (handler) {
     const {

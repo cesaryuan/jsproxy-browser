@@ -37,8 +37,8 @@ chrome-extension-resource: \
 `
 
 /**
- * @param {URL} urlObj 
- * @param {number} pageId 
+ * @param {URL} urlObj
+ * @param {number} pageId
  */
 export function getHtmlCode(urlObj, pageId) {
   const icoUrl = path.PREFIX + urlObj.origin + '/favicon.ico'
@@ -49,7 +49,36 @@ export function getHtmlCode(urlObj, pageId) {
 <!doctype html>
 <link rel="icon" href="${icoUrl}" type="image/x-icon">
 <meta http-equiv="content-security-policy" content="frame-src ${CSP}; object-src ${CSP}">
-<base href="${urlObj.href}">
+<base href="${urlObj.href.replace(path.FAKE_DOMAIN, path.REAL_DOMAIN)}">
+<title>无敌</title>
+<style>
+    div#pcHeadHtml {
+        display: none;
+    }
+    
+    header.default-head.hidden-print.sticky {
+        display: none;
+    }
+    
+    .cp.hidden-print {
+        display: none;
+    }
+    </style>
+    <script>
+        var cookieDesc = Object.getOwnPropertyDescriptor(Document.prototype, 'title') ||
+                         Object.getOwnPropertyDescriptor(HTMLDocument.prototype, 'title');
+        if (cookieDesc && cookieDesc.configurable) {
+            Object.defineProperty(document, 'title', {
+                get: function () {
+                    return cookieDesc.get.call(document);
+                },
+                set: function (val) {
+                    console.log(val);
+                    cookieDesc.set.call(document, '无敌');
+                }
+            });
+        }
+</script>
 <script data-id="${pageId}" src="${path.HELPER}"></script>
 ${custom}
 <!-- PADDING ${PADDING} -->

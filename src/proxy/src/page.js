@@ -7,7 +7,7 @@ import * as cookie from './cookie.js'
 import * as jsfilter from './jsfilter.js'
 import * as env from './env.js'
 import * as client from './client.js'
-
+import * as path from './path.js'
 
 const {
   apply,
@@ -20,7 +20,7 @@ function initDoc(win, domHook) {
   const headElem = document.head
   const baseElemList = document.getElementsByTagName('base')
   const baseElem = baseElemList[0]
-  
+
   document.__baseElem = baseElem
 
   //
@@ -33,7 +33,7 @@ function initDoc(win, domHook) {
       return
     }
     nodeSet.add(node)
-    
+
     const nodes = node.childNodes
     for (let i = 0, n = nodes.length; i < n; i++) {
       onNodeAdd(nodes[i])
@@ -60,7 +60,7 @@ function initDoc(win, domHook) {
   }
 
   /**
-   * @param {MutationRecord[]} mutations 
+   * @param {MutationRecord[]} mutations
    */
   function parseMutations(mutations) {
     mutations.forEach(mutation => {
@@ -79,8 +79,8 @@ function initDoc(win, domHook) {
 
 /**
  * Hook 页面 API
- * 
- * @param {Window} win 
+ *
+ * @param {Window} win
  */
 export function init(win) {
   if (!win) {
@@ -225,15 +225,15 @@ export function init(win) {
 
   /**
    * History API
-   * @param {string} name 
+   * @param {string} name
    */
   function hookHistory(name) {
     const proto = win['History'].prototype
 
     hook.func(proto, name, oldFn =>
     /**
-     * @param {*} data 
-     * @param {string} title 
+     * @param {*} data
+     * @param {string} title
      * @param {string} url 相对或绝对路径
      */
     function(data, title, url) {
@@ -241,20 +241,21 @@ export function init(win) {
 
       const {loc, doc} = env.get(this)
       if (doc && url) {
-        const dstUrlObj = urlx.newUrl(url, doc.baseURI)
+        // 让通过History API修改locaotion也替换为FAKE_DOMAIN
+        const dstUrlObj = urlx.newUrl(url, doc.baseURI.replace(path.REAL_DOMAIN, path.FAKE_DOMAIN))
         if (dstUrlObj) {
           // 当前页面 URL
           const srcUrlStr = urlx.decUrlObj(loc)
           const srcUrlObj = new URL(srcUrlStr)
-
-          if (srcUrlObj.origin !== dstUrlObj.origin) {
-            throw Error(`\
-Failed to execute '${name}' on 'History': \
-A history state object with URL '${url}' \
-cannot be created in a document with \
-origin '${srcUrlObj.origin}' and URL '${srcUrlStr}'.`
-            )
-          }
+          // 这里如果不注释掉，就会报错，因为我们上边修改了dstUrlObj的值
+//           if (srcUrlObj.origin !== dstUrlObj.origin) {
+//             throw Error(`\
+// Failed to execute '${name}' on 'History': \
+// A history state object with URL '${url}' \
+// cannot be created in a document with \
+// origin '${srcUrlObj.origin}' and URL '${srcUrlStr}'.`
+//             )
+//           }
           arguments[2] = urlx.encUrlObj(dstUrlObj)
         }
       }
@@ -383,7 +384,7 @@ origin '${srcUrlObj.origin}' and URL '${srcUrlStr}'.`
   {
     name: 'http-equiv',
     onget(val) {
-      // TODO: 
+      // TODO:
       return val
     },
     onset(val) {
@@ -527,7 +528,7 @@ origin '${srcUrlObj.origin}' and URL '${srcUrlStr}'.`
   //
   function hookAnchorUrlProp(proto) {
     /**
-     * @param {string} key 
+     * @param {string} key
      */
     function setupProp(key) {
       hook.prop(proto, key,
@@ -560,7 +561,7 @@ origin '${srcUrlObj.origin}' and URL '${srcUrlStr}'.`
     this.action = this.action
     return apply(oldFn, this, arguments)
   })
-  
+
 
   //
   // 监控 离屏元素.click() 方式打开页面
@@ -663,12 +664,12 @@ origin '${srcUrlObj.origin}' and URL '${srcUrlStr}'.`
     }
   )
 
-  
+
   /** @type {WeakSet<HTMLScriptElement>} */
   const parsedSet = new WeakSet()
 
   /**
-   * @param {HTMLScriptElement} elem 
+   * @param {HTMLScriptElement} elem
    */
   function updateScriptText(elem, code) {
     // 有些脚本仅用于存储数据（例如模块字符串），无需处理
@@ -684,10 +685,10 @@ origin '${srcUrlObj.origin}' and URL '${srcUrlStr}'.`
     return jsfilter.parseStr(code)
   }
 
-  
+
   /**
    * 处理 <tag onevent=""> 形式的脚本
-   * @param {string} eventName 
+   * @param {string} eventName
    */
   function hookEvent(eventName) {
     const scanedSet = new WeakSet()

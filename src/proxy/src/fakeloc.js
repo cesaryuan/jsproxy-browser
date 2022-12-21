@@ -1,5 +1,5 @@
 import * as urlx from "./urlx";
-
+import * as path from "./path";
 const {
   defineProperty,
   setPrototypeOf,
@@ -27,10 +27,14 @@ export function createFakeLoc(global) {
   let ancestorOrigins
 
   /**
-   * @param {Location | URL} loc 
+   * @param {Location | URL} loc
    */
   function getPageUrlObj(loc) {
-    return new URL(urlx.decUrlObj(loc))
+    let url = new URL(urlx.decUrlObj(loc));
+    // 用了FAKE_DOMAIN特性之后，会导致网页通过locaotion获取到的href是错的
+    // 因此获取href的时候也需要做替换
+    url.href = url.href.replace(path.FAKE_DOMAIN, path.REAL_DOMAIN)
+    return url
   }
 
 

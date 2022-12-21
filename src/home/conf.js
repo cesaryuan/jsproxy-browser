@@ -12,25 +12,10 @@ jsproxy_config({
 
   // 节点配置
   node_map: {
-    'demo-hk': {
-      label: '演示服务-香港节点',
+    'demo': {
+      label: '演示服务',
       lines: {
-        // 主机:权重
-        'node-aliyun-hk-0.etherdream.com:8443': 1,
-        'node-aliyun-hk-1.etherdream.com:8443': 1,
-        'node-aliyun-hk-2.etherdream.com:8443': 1,
-      }
-    },
-    'demo-sg': {
-      label: '演示服务-新加坡节点',
-      lines: {
-        'node-aliyun-sg.etherdream.com:8443': 1,
-      },
-    },
-    'demo-la': {
-      label: '演示服务-洛杉矶节点',
-      lines: {
-        'node-bwh-la.etherdream.com:8443': 1,
+        'proxy.cesaryuan.workers.dev': 1,
       },
     },
     'mysite': {
@@ -52,7 +37,7 @@ jsproxy_config({
   /**
    * 默认节点
    */
-  node_default: 'demo-hk',
+  node_default: /jsproxy-demo\.\w+$/.test(location.host) ? 'demo' : 'mysite',
 
   /**
    * 加速节点

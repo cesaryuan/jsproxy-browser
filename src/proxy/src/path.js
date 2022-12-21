@@ -1,12 +1,14 @@
 
-export const ROOT = getRootPath() 
+export const ROOT = getRootPath()
 export const HOME = ROOT + 'index.html'
 export const CONF = ROOT + 'conf.js'
 export const ICON = ROOT + 'favicon.ico'
 export const HELPER = ROOT + '__sys__/helper.js'
 export const ASSETS = ROOT + '__sys__/assets/'
 export const PREFIX = ROOT + '-----'
-
+// 任意值
+export const FAKE_DOMAIN = 'testhhh.com'
+export const REAL_DOMAIN = 'whssfj.ai.lvpin100.com'
 
 function getRootPath() {
   //

@@ -1,5 +1,5 @@
 import * as env from "./env";
-
+const page = require('./page.js')
 
 function pageEnv(win) {
   env.setEnvType(env.ENV_PAGE)
@@ -24,7 +24,7 @@ function pageEnv(win) {
     }
 
     // eslint-disable-next-line no-undef
-    const page = require('./page.js')
+
     page.init(win)
 
     console.log('[jsproxy] top page inited')
